@@ -15,8 +15,8 @@ public class MyBot implements Bot {
     public MyBot() {
         Random random = new Random();
         int dynamiteNumber = 0;
-        for (int i = 0; i < 101; i++){
-            int nextRandom = random.nextInt(5);
+        for (int i = 0; i < 500; i++){
+            int nextRandom = random.nextInt(7) + 3;
             dynamiteNumber += nextRandom;
             whenToDynamite.add(dynamiteNumber);
         }
@@ -26,23 +26,47 @@ public class MyBot implements Bot {
     @Override
     public Move makeMove(Gamestate gamestate) {
         Move move;
-        if (whenToDynamite.contains(currentRound)){
-            move = BoomKapow();
-        }
+        if (gamestate.getRounds().size() < 3)
+            move = defaultMove();
         else{
-            move = getRandomMove();
+            if(checkForPattern(gamestate)){
+                move =  getMoveThatBeats(gamestate);
+            }
+            else
+                move = defaultMove();
         }
-        currentRound ++;
         return move;
     }
 
-    public boolean checkDynamite(){
-        if (noOfDynamites < 101){
-            return false;
-        }
-        else{
+    private boolean checkForPattern(Gamestate gamestate) {
+        Round lastRound = (Round)gamestate.getRounds().get(gamestate.getRounds().size() - 1);
+        Round roundBefore = (Round)gamestate.getRounds().get(gamestate.getRounds().size() - 2);
+        Round roundBeforeThat = (Round)gamestate.getRounds().get(gamestate.getRounds().size() - 3);
+        if (lastRound == roundBefore && roundBefore == roundBeforeThat)
             return true;
+        else
+            return false;
+    }
+
+    private Move getMoveThatBeats(Gamestate gamestate) {
+        Round lastRound = (Round)gamestate.getRounds().get(gamestate.getRounds().size() - 1);
+        switch(lastRound.getP2()) {
+            case R:
+                return Move.P;
+            case P:
+                return Move.S;
+            case S:
+                return Move.R;
+            default:
+                return defaultMove();
         }
+    }
+
+    public boolean checkDynamite(){
+        if (noOfDynamites < 101)
+            return false;
+        else
+            return true;
     }
 
     public void addDynamite(){
@@ -56,14 +80,17 @@ public class MyBot implements Bot {
         return randomMove;
     }
 
-    public Move BoomKapow(){
+    public Move defaultMove(){
         Move move;
-        if (checkDynamite()){
-            addDynamite();
-            return Move.D;
+        if (whenToDynamite.contains(currentRound)){
+            if (checkDynamite()){
+                addDynamite();
+                return Move.D;
+            }
+            else
+                return  getRandomMove();
         }
         else
             return  getRandomMove();
     }
-
 }
