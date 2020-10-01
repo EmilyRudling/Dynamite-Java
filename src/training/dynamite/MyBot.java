@@ -3,7 +3,13 @@ package training.dynamite;
 import com.softwire.dynamite.bot.Bot;
 import com.softwire.dynamite.game.*;
 
+import java.util.List;
+import java.util.Random;
+
 public class MyBot implements Bot {
+    int noOfDynamites = 0;
+    List<Integer> whenToDynamite;
+    int currentRound = 0;
 
     public MyBot() {
         // Are you debugging?
@@ -13,9 +19,41 @@ public class MyBot implements Bot {
 
     @Override
     public Move makeMove(Gamestate gamestate) {
-        // Are you debugging?
-        // Put a breakpoint in this method to see when we make a move
-        return Move.R;
+        Move move = Move.W;
+        if (whenToDynamite.contains(currentRound)){
+            move = BoomKapow();
+        }
+        else{
+            getRandomMove();
+        }
+        currentRound ++;
+        return move;
+    }
+    public boolean checkDynamite(){
+        if (noOfDynamites < 101){
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
+    public void addDynamite(){
+        noOfDynamites++;
+    }
+    public Move getRandomMove() {
+        int randomNumberBetween0And3 = (int)Math.floor(Math.random() * 3.0D);
+        Move[] possibleMoves = new Move[]{Move.R, Move.P, Move.S};
+        Move randomMove = possibleMoves[randomNumberBetween0And3];
+        return randomMove;
+    }
+    public Move BoomKapow(){
+        Move move;
+        if (checkDynamite()){
+            addDynamite();
+            return Move.D;
+        }
+        else
+            return  getRandomMove();
     }
 
 }
