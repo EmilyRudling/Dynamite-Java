@@ -42,7 +42,7 @@ public class MyBot implements Bot {
         Round lastRound = (Round)gamestate.getRounds().get(gamestate.getRounds().size() - 1);
         Round roundBefore = (Round)gamestate.getRounds().get(gamestate.getRounds().size() - 2);
         Round roundBeforeThat = (Round)gamestate.getRounds().get(gamestate.getRounds().size() - 3);
-        if (lastRound == roundBefore && roundBefore == roundBeforeThat)
+        if (lastRound.getP2() == roundBefore.getP2() && roundBefore.getP2() == roundBeforeThat.getP2())
             return true;
         else
             return false;
